@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Separator } from './components/ui/separator';
+import { Dashboard } from './components/Dashboard';
+import { blink } from './blink/client';
 import { 
   Search, 
   MessageSquare, 
@@ -21,6 +23,23 @@ import {
 } from 'lucide-react';
 
 function App() {
+  const [currentView, setCurrentView] = useState<'landing' | 'dashboard'>('landing');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = blink.auth.onAuthStateChanged((state) => {
+      setUser(state.user);
+      if (state.user) {
+        setCurrentView('dashboard');
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  if (currentView === 'dashboard') {
+    return <Dashboard />;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -41,8 +60,40 @@ function App() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" className="text-gray-600">Sign In</Button>
-              <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
+              {user ? (
+                <>
+                  <span className="text-sm text-gray-600">Welcome, {user.email}</span>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-600"
+                    onClick={() => setCurrentView('dashboard')}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => blink.auth.logout()}
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-600"
+                    onClick={() => blink.auth.login()}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => blink.auth.login()}
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -63,7 +114,11 @@ function App() {
               automate outreach, and generate presentations in seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3">
+              <Button 
+                size="lg" 
+                className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3"
+                onClick={() => blink.auth.login()}
+              >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -319,7 +374,10 @@ function App() {
                     <span>Email support</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => blink.auth.login()}
+                >
                   Start Free Trial
                 </Button>
               </CardContent>
@@ -361,7 +419,10 @@ function App() {
                     <span>Team collaboration</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => blink.auth.login()}
+                >
                   Start Free Trial
                 </Button>
               </CardContent>
@@ -418,7 +479,11 @@ function App() {
             Join thousands of recruiters who are already working smarter with Spott
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-3">
+            <Button 
+              size="lg" 
+              className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-3"
+              onClick={() => blink.auth.login()}
+            >
               Start Free Trial
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
