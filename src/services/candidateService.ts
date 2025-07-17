@@ -31,14 +31,15 @@ export class CandidateService {
         model: 'gpt-4o-mini'
       })
 
-      // Log the search for analytics
-      await blink.db.searchQueries.create({
-        id: `search_${Date.now()}`,
-        userId: (await blink.auth.me()).id,
-        query,
-        filters: JSON.stringify(filters || {}),
-        resultsCount: 0
-      })
+      // Log the search for analytics (temporarily disabled due to database limits)
+      // TODO: Re-enable when database is available
+      // await blink.db.searchQueries.create({
+      //   id: `search_${Date.now()}`,
+      //   userId: (await blink.auth.me()).id,
+      //   query,
+      //   filters: JSON.stringify(filters || {}),
+      //   resultsCount: 0
+      // })
 
       // For demo purposes, return mock candidates
       // In production, this would search external databases
